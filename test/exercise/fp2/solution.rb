@@ -17,3 +17,4 @@ module Exercise
       def my_reduce; end
     end
   end
+end
