@@ -9,9 +9,7 @@ module Exercise
 
       def replace(array)
         max_element_in_array = get_max_element(array)
-        result = []
-        array.each { |element| result << (element.positive? ? max_element_in_array : element) }
-        result
+        array.map { |element|  element.positive? ? max_element_in_array : element }
       end
 
       def search(array, query, low = 0, higth = array.length - 1)
@@ -19,8 +17,8 @@ module Exercise
 
         middpoint = ((low + higth) / 2).to_i
         return middpoint if query == array[middpoint]
-        return search(array, query, low, middpoint - 1) if query < array[middpoint]
-        return search(array, query, middpoint + 1, higth) if query > array[middpoint]
+
+        query < array[middpoint] ? search(array, query, low, middpoint - 1) : search(array, query, middpoint + 1, higth)
       end
     end
   end
