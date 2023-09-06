@@ -4,30 +4,24 @@ module Exercise
       # Обратиться к параметрам фильма можно так:
       # film["name"], film["rating_kinopoisk"], film["rating_imdb"],
       # film["genres"], film["year"], film["access_level"], film["country"]
-      def rating(array)
-        sort = array.map do |n|
-          next unless !n['rating_kinopoisk'].nil? && n['rating_kinopoisk'].to_f.positive?
+      def sort_raiting_and_country(elem)
+        true if !elem['rating_kinopoisk'].nil? && elem['rating_kinopoisk'].to_f.positive? && !elem['country'].nil? && elem['country'].split(',').count >= 2
+      end
 
-          n['rating_kinopoisk'].to_f if !n['country'].nil? && n['country'].include?(',')
-        end
-        newsort = sort.compact
-        count = newsort.count
-        (newsort.reduce(0) { |sum, number| sum + number }) / count
+      def rating(array)
+        mid_raiting = []
+        array.map { |element| mid_raiting << element['rating_kinopoisk'].to_f if sort_raiting_and_country(element) == true }
+        (mid_raiting.reduce(0) { |sum, number| sum + number }) / mid_raiting.count
       end
 
       def chars_count(films, threshold)
-        sort = films.map do |n|
-          next unless n['rating_kinopoisk'].to_f >= threshold
-
-          if !n['name'].nil? && n['name'].include?('и')
-            st = n['name'].chars
-            st.map { |m| m == 'и' ? 1 : 0 }
+        count_letter = 0
+        films.map do |element|
+          if element['rating_kinopoisk'].to_f >= threshold && !element['name'].nil? && element['name'].include?('и')
+            count_letter += element['name'].chars.count('и')
           end
         end
-        newsort = sort.compact
-        po = newsort.map { |n| n.reduce(0) { |sum, number| sum + number } }
-
-        po.reduce(0) { |sum, number| sum + number }
+        count_letter
       end
     end
   end
