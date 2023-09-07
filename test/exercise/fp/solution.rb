@@ -4,24 +4,21 @@ module Exercise
       # Обратиться к параметрам фильма можно так:
       # film["name"], film["rating_kinopoisk"], film["rating_imdb"],
       # film["genres"], film["year"], film["access_level"], film["country"]
-      def sort_raiting_and_country(elem)
-        true if !elem['rating_kinopoisk'].nil? && elem['rating_kinopoisk'].to_f.positive? && !elem['country'].nil? && elem['country'].split(',').count >= 2
+      def selection_conditions?(row)
+        !row['rating_kinopoisk'].nil? && row['rating_kinopoisk'].to_f.positive? && !row['country'].nil? && row['country'].split(',').count >= 2
       end
 
       def rating(array)
-        mid_raiting = []
-        array.map { |element| mid_raiting << element['rating_kinopoisk'].to_f if sort_raiting_and_country(element) == true }
-        (mid_raiting.reduce(0) { |sum, number| sum + number }) / mid_raiting.count
+        raiting_kinopoisk = []
+        array.map { |row| raiting_kinopoisk << row['rating_kinopoisk'].to_f if selection_conditions?(row) }
+        (raiting_kinopoisk.reduce(0) { |sum, number| sum + number }) / raiting_kinopoisk.count
       end
 
       def chars_count(films, threshold)
-        count_letter = 0
-        films.map do |element|
-          if element['rating_kinopoisk'].to_f >= threshold && !element['name'].nil? && element['name'].include?('и')
-            count_letter += element['name'].chars.count('и')
-          end
+        array_count_letters_i = films.each_with_object([]) do |value, array|
+          array << value['name'].count('и') if value['rating_kinopoisk'].to_f >= threshold && !value['name'].nil? && value['name'].include?('и')
         end
-        count_letter
+        array_count_letters_i.reduce(0) { |sum, number| sum + number }
       end
     end
   end
