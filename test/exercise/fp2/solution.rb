@@ -5,34 +5,43 @@ module Exercise
       # Использовать свои написанные функции для реализации следующих - можно.
 
       # Написать свою функцию my_each
-      def my_each
-        for i in 0..(length - 1)
-          yield(self[i])
-        end
-        self
+      def my_each(&block)
+        array = self
+        return array if array.empty?
+
+        head, *tail = array 
+        
+        yield head
+
+        MyArray.new(tail).my_each(&block)
+        array
       end
 
       # Написать свою функцию my_map
       def my_map
-        result = MyArray.new
-        my_each { |n| result << yield(n) }
-        result
+        func = ->(acc, el) { acc << yield(el) }
+        empty_array = MyArray.new
+        my_reduce(empty_array, &func)
       end
 
       # Написать свою функцию my_compact
       def my_compact
-        result = MyArray.new
-        my_each { |n| result << n unless n.nil? }
-        result
+        func = ->(acc, el) { el.nil? ? acc : acc << el }
+        empty_array = MyArray.new
+        my_reduce(empty_array, &func)
       end
 
       # Написать свою функцию my_reduce
-      def my_reduce(init = nil)
-        acc = self[0]
-        for i in 1..(length - 1)
-          acc = yield(acc, self[i])
+      def my_reduce(acc = nil)
+        arr = self
+        arr.my_each do |el|
+          acc = if acc.nil?
+                   arr.first
+                else
+                   yield(acc, el)
+                end
         end
-        init ? yield(init, acc) : acc
+        acc
       end
     end
   end
