@@ -6,42 +6,38 @@ module Exercise
 
       # Написать свою функцию my_each
       def my_each(&block)
-        array = self
-        return array if array.empty?
+        return if empty?
 
-        head, *tail = array 
-        
+        head, *tail = self
+
         yield head
 
         MyArray.new(tail).my_each(&block)
-        array
+        self
       end
 
       # Написать свою функцию my_map
       def my_map
-        func = ->(acc, el) { acc << yield(el) }
-        empty_array = MyArray.new
-        my_reduce(empty_array, &func)
+        my_reduce(MyArray.new) { |acc, element| acc << yield(element) }
       end
 
       # Написать свою функцию my_compact
       def my_compact
-        func = ->(acc, el) { el.nil? ? acc : acc << el }
-        empty_array = MyArray.new
-        my_reduce(empty_array, &func)
+        my_reduce(MyArray.new) { |acc, element| element.nil? ? acc : acc << element }
       end
 
       # Написать свою функцию my_reduce
-      def my_reduce(acc = nil)
-        arr = self
-        arr.my_each do |el|
-          acc = if acc.nil?
-                   arr.first
-                else
-                   yield(acc, el)
-                end
+      def my_reduce(acc = nil, &block)
+        return acc if empty?
+
+        head, *tail = self
+        if acc.nil?
+          new_acc = block.call(head, tail.first, &block)
+          tail = tail[1..]
+        else
+          new_acc = block.call(acc, head, &block)
         end
-        acc
+        MyArray.new(tail).my_reduce(new_acc, &block)
       end
     end
   end
