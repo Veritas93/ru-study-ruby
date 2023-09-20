@@ -31,13 +31,9 @@ module Exercise
         return acc if empty?
 
         head, *tail = self
-        if acc.nil?
-          new_acc = block.call(head, tail.first, &block)
-          tail = tail[1..]
-        else
-          new_acc = block.call(acc, head, &block)
-        end
-        MyArray.new(tail).my_reduce(new_acc, &block)
+        return MyArray.new(tail[1..]).my_reduce(block.call(head, tail.first, &block), &block) if acc.nil?
+
+        MyArray.new(tail).my_reduce(block.call(acc, head, &block), &block)
       end
     end
   end
