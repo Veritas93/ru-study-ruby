@@ -9,15 +9,14 @@ module Exercise
       end
 
       def rating(array)
-        raiting_kinopoisk = array.map { |row| row['rating_kinopoisk'].to_f if selection_conditions?(row) } - [nil]
+        raiting_kinopoisk = array.map { |row| row['rating_kinopoisk'].to_f if selection_conditions?(row) }.compact
         (raiting_kinopoisk.reduce(0) { |sum, number| sum + number }) / raiting_kinopoisk.count
       end
 
       def chars_count(films, threshold)
-        sum_letters_i_in_name = films.each_with_object([]) do |film, acc|
-          acc << film['name'].count('и') if film['rating_kinopoisk'].to_f >= threshold && !film['name'].nil? && film['name'].include?('и')
+        films.reduce(0) do |sum, number|
+          sum + (number['rating_kinopoisk'].to_f >= threshold && !number['name'].nil? && number['name'].include?('и') ? number['name'].count('и') : 0)
         end
-        sum_letters_i_in_name.reduce(0) { |sum, number| sum + number }
       end
     end
   end
